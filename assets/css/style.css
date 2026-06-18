@@ -5,21 +5,41 @@
 
 /* ---------- 1. 디자인 토큰 ---------- */
 :root{
-  --navy:#0B2545;        /* 주색 — 헤더/푸터/딥 배경 */
-  --ink:#08182F;         /* 더 어두운 네이비(그라데이션 끝) */
-  --steel:#2A7DE1;       /* 보조 — 물/파이프, 링크·포인트 */
-  --steel-dark:#1A5FB4;
-  --brass:#C9A24B;       /* 강조 — 프리미엄 골드(CTA·포인트) */
-  --brass-light:#E2C277;
-  --off:#F4F6FA;         /* 밝은 배경 */
+  /* ----- 프리미엄 팔레트 (Premium Palette) — 미드나잇 네이비 × 샴페인 골드 ----- */
+  --navy:#0A2342;        /* 주색 — 더 깊은 미드나잇 네이비 */
+  --navy-700:#0E2C53;    /* 표면용(카드·딥 패널) 한 톤 밝은 네이비 */
+  --ink:#05132A;         /* 그라데이션 끝 — 옵시디언 */
+  --steel:#2F86F0;       /* 보조 — 사파이어 블루(물/파이프, 링크) */
+  --steel-dark:#1A5FC4;
+  --steel-soft:#6FA8EE;  /* 옅은 사파이어(보조 라인·아이콘) */
+  --brass:#C7A24C;       /* 강조 — 샴페인 골드(CTA·포인트) */
+  --brass-light:#E9D196; /* 골드 하이라이트 */
+  --brass-deep:#9A7A2E;  /* 골드 그라데이션 딥(메탈 음영) */
+  --off:#F1F5FB;         /* 밝은 배경 — 쿨 페이퍼 */
   --paper:#FBFCFE;       /* 본문 배경 */
-  --slate:#5E708A;       /* 보조 텍스트 */
-  --line:#E2E8F1;        /* 구분선·테두리 */
+  --paper-2:#F6F9FE;     /* 미세 톤 분리용 배경 */
+  --slate:#5B6E89;       /* 보조 텍스트 */
+  --slate-2:#7C8AA0;     /* 더 옅은 보조 텍스트 */
+  --line:#E1E8F2;        /* 구분선·테두리 */
+  --line-strong:#CFDAEA; /* 강조 구분선 */
   --white:#FFFFFF;
 
-  --grad-navy:linear-gradient(180deg, var(--navy), var(--ink));
-  --shadow:0 8px 24px rgba(11,37,69,.08);
-  --shadow-lg:0 16px 48px rgba(11,37,69,.14);
+  /* ----- 프리미엄 효과 토큰 (Premium Effect Tokens) ----- */
+  --grad-navy:linear-gradient(165deg, var(--navy) 0%, var(--ink) 100%);
+  --grad-gold:linear-gradient(135deg, var(--brass-light) 0%, var(--brass) 48%, var(--brass-deep) 100%);
+  --grad-gold-text:linear-gradient(92deg, var(--brass-light) 0%, var(--brass) 70%);
+  --grad-steel:linear-gradient(135deg, var(--steel-soft), var(--steel-dark));
+  --glass:rgba(255,255,255,.72);          /* 라이트 글래스 표면 */
+  --glass-dark:rgba(10,35,66,.55);        /* 다크 글래스 표면 */
+  --hairline-gold:rgba(199,162,76,.40);   /* 골드 헤어라인 */
+  --ring-gold:0 0 0 1px var(--hairline-gold);
+  --mesh:radial-gradient(60% 80% at 12% 8%, rgba(47,134,240,.18) 0%, rgba(47,134,240,0) 60%),
+         radial-gradient(50% 70% at 92% 0%, rgba(199,162,76,.16) 0%, rgba(199,162,76,0) 60%);
+  --sheen:linear-gradient(105deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.55) 48%, rgba(255,255,255,0) 66%);
+
+  --shadow:0 8px 24px rgba(10,35,66,.08);
+  --shadow-lg:0 18px 50px rgba(10,35,66,.16);
+  --shadow-gold:0 10px 26px rgba(199,162,76,.34);
 
   --r-card:14px;
   --r-btn:10px;
@@ -990,3 +1010,112 @@ body{ background:#E7ECF5; }
 .footer-legal a:hover{color:#fff;}
 .footer-legal a + a{position:relative;}
 .footer-legal a + a::before{content:"·";position:absolute;left:-10px;color:#5C739A;}
+
+/* =========================================================================
+   ✦✦ 프리미엄 컴포넌트 오버레이 (Premium Component Overlay)
+   기존 컴포넌트 위에 프리미엄 팔레트/효과 토큰을 덧입히는 레이어.
+   토큰만 참조하므로 팔레트 교체 시 자동으로 함께 반영됩니다.
+   ========================================================================= */
+
+/* ---- 골드 그라데이션 텍스트(공통 유틸) ---- */
+.eyebrow,
+.hero h1 .accent,
+.page-hero h1 .accent{
+  background:var(--grad-gold-text);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+}
+
+/* ---- CTA 버튼: 메탈 골드 그라데이션 + 샤인 스윕 ---- */
+.btn--primary{
+  position:relative;overflow:hidden;
+  background:var(--grad-gold);color:var(--ink);
+  box-shadow:var(--shadow-gold);
+  border:1px solid rgba(255,255,255,.18);
+}
+.btn--primary:hover{background:var(--grad-gold);filter:brightness(1.04);}
+.btn--primary::after{
+  content:"";position:absolute;inset:0;
+  background:var(--sheen);transform:translateX(-120%);
+  transition:transform .7s ease;pointer-events:none;
+}
+.btn--primary:hover::after{transform:translateX(120%);}
+.btn{transition:transform .2s ease, box-shadow .2s ease, filter .2s ease, background .2s ease;}
+
+/* ---- 카드류: 골드 헤어라인 링 + 상단 그라데이션 엣지 + 리프트 ---- */
+.service-card,.trust-card,.case-card,.link-card,.cost-card,.sidebar-card{
+  position:relative;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.service-card::before,.case-card::before,.link-card::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:3px;
+  background:var(--grad-gold);opacity:0;transition:opacity .25s ease;
+  border-radius:var(--r-card) var(--r-card) 0 0;
+}
+.service-card:hover,.case-card:hover,.link-card:hover{
+  box-shadow:var(--shadow-lg), var(--ring-gold);
+  border-color:transparent;
+}
+.service-card:hover::before,.case-card:hover::before,.link-card:hover::before{opacity:1;}
+
+/* 서비스 카드 아이콘: 딥 네이비 + 골드 글로우 */
+.service-card .ico-wrap{
+  background:var(--grad-navy);color:var(--brass-light);
+  box-shadow:inset 0 0 0 1px var(--hairline-gold), 0 6px 16px rgba(10,35,66,.18);
+}
+
+/* ---- 헤더: 스크롤 시 글래스모피즘 강화 + 골드 하단 헤어라인 ---- */
+.site-header.is-scrolled{
+  background:var(--glass);
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  box-shadow:0 1px 0 var(--hairline-gold), var(--shadow);
+}
+
+/* ---- 히어로/지역 히어로: 메시 글로우 백드롭 ---- */
+.hero,.page-hero{position:relative;isolation:isolate;}
+.hero::before,.page-hero::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:var(--mesh);pointer-events:none;
+}
+
+/* ---- 딥 네이비 섹션: 메시 글로우 + 골드 상단 라인 ---- */
+.section--navy{position:relative;overflow:hidden;}
+.section--navy::before{
+  content:"";position:absolute;inset:0;background:var(--mesh);
+  opacity:.7;pointer-events:none;z-index:0;
+}
+.section--navy > *{position:relative;z-index:1;}
+.section--navy::after{
+  content:"";position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--hairline-gold),transparent);
+}
+
+/* ---- 배지/칩: 골드 글래스 + 헤어라인 ---- */
+.badge{
+  background:linear-gradient(180deg, rgba(233,209,150,.16), rgba(199,162,76,.10));
+  box-shadow:var(--ring-gold);color:var(--brass);
+}
+
+/* ---- 신뢰 리본: 골드 구분 헤어라인 ---- */
+.trust-ribbon{box-shadow:inset 0 -1px 0 var(--hairline-gold);}
+
+/* ---- FAQ 아코디언: 열림 시 골드 좌측 인디케이터 ---- */
+.faq-item{transition:box-shadow .2s ease, border-color .2s ease;}
+.faq-item.is-open{box-shadow:var(--ring-gold), var(--shadow);}
+
+/* ---- CTA 배너: 골드 상단 헤어라인 ---- */
+.cta-banner{position:relative;}
+.cta-banner::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:var(--grad-gold);opacity:.85;
+}
+
+/* ---- 모바일 하단바 주요 버튼: 골드 그라데이션 ---- */
+.mobile-bar a.is-primary{background:var(--grad-gold);color:var(--ink);}
+
+/* ---- 모션 민감 사용자 배려 ---- */
+@media (prefers-reduced-motion:reduce){
+  .btn--primary::after{transition:none;}
+  .btn,.service-card,.case-card,.link-card,.trust-card{transition:none;}
+}
