@@ -1,12 +1,13 @@
 # 색인(인덱싱) 빠르게 만들기 — 운영 가이드
 
-도메인: `https://plumbing-works.pages.dev`
+도메인: `https://plumbingkorea.pages.dev`
 
 ## 0. 한눈에
 | 채널 | 방법 | 즉시성 |
 |------|------|--------|
 | **Bing · Naver · Yandex** | IndexNow (`tools/indexnow.py`) | 즉시 통보 |
 | **Google** | Indexing API (`tools/google_index.py`) + Search Console | 빠름 |
+| **한 번에** | `tools/notify_all.py` (IndexNow + 구글) | 글 올릴 때 1회 |
 | 공통 | `sitemap.xml` + `rss.xml` 제출 | 표준 |
 
 > ⚠️ **sitemap ping은 중단됨**: Google은 2023년 6월 sitemap ping 엔드포인트를 폐지했고, Bing도 IndexNow 사용을 권장합니다. 그래서 ping 대신 **IndexNow + Indexing API + 콘솔 제출**로 구성했습니다.
@@ -40,16 +41,25 @@ python3 tools/google_index.py --from-sitemap     # 전체(일 200건 쿼터 주�
 ```
 
 ## 3. 검색엔진 콘솔 등록(최초 1회, 가장 중요)
-- **네이버 서치어드바이저**: 사이트 등록 → 소유확인(이미 메타 적용됨) → 사이트맵 제출 `https://plumbing-works.pages.dev/sitemap.xml` → RSS 제출 `…/rss.xml`
+- **네이버 서치어드바이저**: 사이트 등록 → 소유확인(이미 메타 적용됨) → 사이트맵 제출 `https://plumbingkorea.pages.dev/sitemap.xml` → RSS 제출 `…/rss.xml`
 - **구글 서치콘솔**: 속성 등록 → 소유확인 → 사이트맵 제출(동일)
 - **Bing 웹마스터도구**: 사이트 등록 → 사이트맵 제출(+IndexNow 자동 연동)
 
 ## 4. 배포 후 1회 권장 절차
 ```bash
-# (배포 완료 확인 후)
-python3 tools/indexnow.py            # Bing·Naver 전체 통보
-python3 tools/google_index.py --from-sitemap   # 구글(세팅 완료 시)
+# (배포 완료 확인 후) — 한 방에 통보
+python3 tools/notify_all.py                 # IndexNow(Bing·Naver) + 구글(SA 있으면 자동)
+
+# 개별 실행도 가능
+python3 tools/indexnow.py                    # Bing·Naver 전체 통보
+python3 tools/google_index.py --from-sitemap # 구글(세팅 완료 시)
 ```
+
+## 5. 글 올릴 때마다(변경분만, 가장 빠름)
+```bash
+python3 tools/notify_all.py /area/seoul/gangnam-gu/ /price.html
+```
+바뀐 URL만 넘기면 IndexNow로 Bing·Naver에 즉시 통보되고, 구글 서비스계정이 설정돼 있으면 구글까지 한 번에 통보합니다.
 
 ## 파일
 - `/<KEY>.txt` — IndexNow 키 검증 파일(루트)

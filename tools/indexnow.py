@@ -13,7 +13,7 @@ IndexNow 즉시 색인 통보 — Bing · Naver · Yandex · Seznam 동시 전�
 """
 import sys, json, os, glob, re, urllib.request
 
-HOST = "plumbing-works.pages.dev"
+HOST = "plumbingkorea.pages.dev"
 SITE = f"https://{HOST}"
 KEY = json.load(open(os.path.join(os.path.dirname(__file__), "indexnow_key.json")))["key"]
 KEY_LOCATION = f"{SITE}/{KEY}.txt"

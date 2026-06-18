@@ -9,7 +9,7 @@
 import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-SITE = "https://plumbing-works.pages.dev"
+SITE = "https://plumbingkorea.pages.dev"
 
 # 공식 채널 URL (확정 후 실제 주소로 교체) — 자리표시값
 NAVER_PLACE = "https://map.naver.com/"      # TODO: 네이버 플레이스(스마트플레이스) 실제 URL
@@ -48,7 +48,7 @@ def head(title, desc, canonical, jsonld="", og_title=None, og_desc=None, robots=
 <meta name="twitter:description" content="{og_desc}">
 <meta name="twitter:image" content="{SITE}/assets/logo/symbol.png">
 <!-- 네이버 서치어드바이저 소유확인 -->
-<meta name="naver-site-verification" content="09f062b8a8c3fe223821c04d584c87380a962d64" />
+<meta name="naver-site-verification" content="b435093f42858fdcfe005786ccf28d7808082442" />
 <!-- 구글 서치콘솔 소유확인: 코드 확정 시 삽입 -->
 <!-- <meta name="google-site-verification" content="여기에_인증코드"> -->
 <link rel="icon" type="image/png" href="/assets/logo/symbol.png">

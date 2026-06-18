@@ -20,7 +20,7 @@ import sys
 import datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_URL = "https://plumbing-works.pages.dev"
+BASE_URL = "https://plumbingkorea.pages.dev"
 TODAY = datetime.date.today().isoformat()
 
 # 스캔에서 제외할 디렉터리(자산/도구/빌드 산출물)

@@ -1,6 +1,6 @@
 # 스피드 배관공사 (SPEED PLUMBING) — 사이트 구성 개요
 
-도메인: https://plumbing-works.pages.dev
+도메인: https://plumbingkorea.pages.dev
 정적 HTML/CSS/소량 JS. 빌드 도구 없이 바로 열리는 구조(`build.py` + `pages.py`로 생성).
 
 ---
