@@ -1358,6 +1358,193 @@ SYMPTOM_TAIL_V = [
     "건물 연식과 용도에 따라 막힘의 원인이 달라집니다. 일시적 이물질일 수도 있지만, 자주 반복된다면 내부 퇴적이나 구배 문제를 의심해볼 수 있습니다.",
 ]
 
+# ===========================================================================
+# 도어웨이 방지 엔진 — 지역 유형 분류 + 유형별 본문 변형 + 롱테일 내부링크
+#   목표: "지역명만 바뀐 본문 대량 생성" 패턴 제거. 페이지마다
+#   ① 유형(도심/지방도시/읍/면)에 맞는 도입부, ② 회전 배치된 증상·서비스·
+#   비용 목록, ③ 인접 지역명을 본문에 녹인 문장, ④ 지역 롱테일 내부링크
+#   조합으로 고유 본문 비율을 끌어올린다.
+# ===========================================================================
+def _hint(seed):
+    return int(_hl.md5(str(seed).encode("utf-8")).hexdigest(), 16)
+
+METRO_SIDOS = {"seoul","busan","daegu","incheon","gwangju","daejeon","ulsan"}
+
+def region_type(name, sido_slug):
+    if name.endswith("면"): return "rural"
+    if name.endswith("읍"): return "town"
+    if sido_slug in METRO_SIDOS: return "metro"
+    return "city"
+
+# ---- 유형별 도입부 P1(지역·건물 특성): {n}=지역명 {gu}=상위 시군구 ----
+INTRO_P1 = {
+ "metro": [
+  "{n}은 {gu} 도심권에 속한 행정동으로, 고층 아파트와 오피스텔, 근린 상가가 빽빽하게 들어선 지역입니다. {n} 일대의 배관공사·하수구막힘, 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다.",
+  "{n}은 {gu}에서도 주거와 상업시설이 함께 밀집한 동네로, 세대수가 많은 아파트 단지와 골목 상권이 맞붙어 있습니다. {n}의 하수구막힘과 배관공사 상담을 함께 안내합니다.",
+  "{n}은 {gu}의 생활 중심지 가운데 하나로, 다세대·빌라와 상가 건물이 촘촘히 이어진 고밀도 주거지입니다. {n} 배관공사·하수구막힘 현장 상담을 안내합니다.",
+  "{n}은 {gu} 도심에 자리한 행정동으로, 오래된 주택가와 신축 건물이 섞여 배관 환경이 다양한 지역입니다. {n}의 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다.",
+  "{n}은 {gu}의 교통·생활 인프라가 모인 동네로, 상주 인구와 유동 인구가 모두 많아 배수 부담이 큰 편입니다. {n} 하수구막힘·배관공사 상담을 안내합니다.",
+ ],
+ "city": [
+  "{n}은 {gu}에 속한 행정동으로, 아파트 단지와 근린 상권, 단독·다세대 주택이 어우러진 지역입니다. {n} 일대의 배관공사·하수구막힘, 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다.",
+  "{n}은 {gu}의 생활권 동네로, 주거지와 상가가 적당히 섞여 가정용·상업용 배관 상담이 고루 들어옵니다. {n}의 하수구막힘과 배관공사 상담을 안내합니다.",
+  "{n}은 {gu}에서 주거 비중이 높은 지역으로, 아파트와 빌라, 오래된 주택이 함께 자리합니다. {n} 배관공사·하수구막힘 현장 상담을 안내합니다.",
+  "{n}은 {gu}의 상권과 주거가 맞닿은 동네로, 식당·카페 등 영업장과 가정집 배관 상담이 함께 들어옵니다. {n}의 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다.",
+  "{n}은 {gu}에 속한 지역으로, 신축 단지부터 노후 주택까지 건물 형태가 다양해 배관 상태도 제각각입니다. {n} 하수구막힘·배관공사 상담을 안내합니다.",
+ ],
+ "town": [
+  "{n}은 {gu}의 읍 소재지로, 읍내 상권과 주거지, 주변 농어촌·단독주택이 어우러진 생활 중심지입니다. {n} 일대의 배관공사·하수구막힘 상담을 안내합니다.",
+  "{n}은 {gu}에서 사람이 모이는 읍 중심지로, 상가와 주택이 밀집해 있고 외곽으로는 단독주택이 이어집니다. {n}의 하수구막힘·배관공사 상담을 안내합니다.",
+  "{n}은 {gu}의 읍 지역으로, 읍내 상가·식당과 다세대·단독주택이 함께 자리한 곳입니다. {n} 배관공사와 하수구막힘 현장 상담을 안내합니다.",
+  "{n}은 {gu}의 생활 거점인 읍으로, 주거와 소규모 상권이 모여 있고 외곽은 농어촌 시설과 맞닿아 있습니다. {n}의 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다.",
+ ],
+ "rural": [
+  "{n}은 {gu}의 면 지역으로, 단독주택과 농어촌 시설이 넓게 자리하고 정화조·외부 오수관을 쓰는 곳이 많습니다. {n} 일대의 배관공사·하수구막힘 상담을 안내합니다.",
+  "{n}은 {gu}에 속한 면으로, 마을 단위 주거와 농가·창고 시설이 흩어져 있어 외부 배관 상담이 잦은 편입니다. {n}의 하수구막힘·배관공사 상담을 안내합니다.",
+  "{n}은 {gu}의 농어촌 면 지역으로, 단독주택과 비닐하우스·축사 등 시설이 함께 있어 배관 환경이 도심과 다릅니다. {n} 배관공사·하수구막힘 현장 상담을 안내합니다.",
+  "{n}은 {gu}의 면으로, 주택과 농어촌 시설이 넓게 퍼져 있고 정화조 연결부 문제가 자주 나타나는 지역입니다. {n}의 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다.",
+ ],
+}
+# ---- 유형별 P2(자주 발생하는 문제) ----
+INTRO_P2 = {
+ "metro": [
+  "세대가 밀집한 만큼 공용 배수관 부담이 커서, 한 세대의 막힘이 아래층 역류로 번지기도 합니다. 아파트·오피스텔은 욕실·싱크대 배수 지연이, 상가는 주방 기름때 막힘이 잦습니다.",
+  "고밀도 주거지라 머리카락·음식물·비누때가 빠르게 쌓이고, 상가 골목은 음식점 배수 부담이 큽니다. 같은 건물에서도 층과 용도에 따라 막힘 양상이 다릅니다.",
+  "유동 인구가 많은 상권은 화장실·바닥 배수구 역류가, 노후 주택가는 배관 구배·부식 문제가 함께 나타납니다. 현장 형태를 먼저 확인하는 것이 중요합니다.",
+  "오피스·상가가 많아 영업시간을 피한 작업 조율이 필요한 경우가 많고, 지하 메인 배관의 퇴적물이 반복 막힘의 원인이 되곤 합니다.",
+ ],
+ "city": [
+  "아파트 단지는 생활 이물질로 인한 욕실·싱크대 막힘이 주를 이루고, 상가는 업종에 따라 배수 부담이 달라집니다. 노후 주택은 배관 구배 문제로 반복 막힘이 나타나기도 합니다.",
+  "가정집은 머리카락·음식물·비누 찌꺼기가, 식당·카페는 기름 슬러지가 주요 원인입니다. 준공 연차가 오래된 건물은 배수 지연 상담이 잦습니다.",
+  "주거와 상권이 섞여 있어 생활 배관과 영업장 배관 문제가 함께 들어옵니다. 반복 막힘이라면 단순 이물질보다 내부 퇴적을 의심해볼 수 있습니다.",
+  "다세대·빌라는 공용 배수관 부담이 크고, 여러 세대에서 동시에 증상이 나타나면 공용관 점검이 우선입니다. 단독주택은 외부 배관 문제가 함께 나타납니다.",
+ ],
+ "town": [
+  "읍내 상가·식당은 주방 기름때와 바닥 배수구 역류가, 주변 주택은 생활 이물질로 인한 막힘이 주로 나타납니다. 외곽 단독주택은 외부 오수관 상담이 함께 들어옵니다.",
+  "사람이 모이는 읍 중심부는 배수 사용량이 많아 막힘이 잦고, 오래된 상가 건물은 배관 노후 문제가 동반됩니다. 현장 구조를 먼저 살피는 것이 좋습니다.",
+  "주거와 상권이 가까워 가정용·상업용 배관 상담이 함께 들어오고, 외곽으로 갈수록 정화조·외부 배관 문제 비중이 높아집니다.",
+ ],
+ "rural": [
+  "단독주택과 농가 시설이 많아 외부 오수관·정화조 연결부에서 비롯된 문제가 자주 나타납니다. 겨울철 동파나 배관 구배 불량 상담도 함께 들어옵니다.",
+  "마을 단위로 배관이 길게 이어져 막힘 위치를 찾는 데 점검이 중요하고, 노후 배관의 부식·퇴적 문제가 흔합니다. 정화조 주변 악취 상담도 잦습니다.",
+  "농어촌 시설은 사용 환경이 제각각이라 막힘 원인이 다양합니다. 외부에 노출된 배관이 많아 계절 요인까지 함께 살펴야 합니다.",
+ ],
+}
+
+# ---- 회전 배치형 증상/서비스/비용 목록(지역마다 항목·순서 변동) ----
+SYMPTOM_POOL = [
+ "물이 평소보다 천천히 빠지는 경우","배수구에서 냄새가 올라오는 경우",
+ "싱크대 물이 역류하는 경우","욕실 바닥 배수가 늦어지는 경우",
+ "변기가 반복적으로 막히는 경우","음식점 주방 배관에 기름때가 쌓인 경우",
+ "오래된 건물의 배관 구배가 좋지 않은 경우","세면대 물이 잘 내려가지 않는 경우",
+ "여러 배수구에서 동시에 물이 안 빠지는 경우","바닥에서 물이 올라오거나 고이는 경우",
+ "하수구에서 벌레가 올라오는 경우","오수관·정화조 주변에서 악취가 나는 경우",
+]
+SERVICE_POOL = [
+ "하수구막힘","배관공사","싱크대막힘","변기막힘","욕실 배수구막힘","세면대막힘",
+ "오수관막힘","배관내시경(CCTV)","고압세척","누수탐지","음식점 하수구막힘",
+ "상가 배관공사","아파트·빌라 배관보수","배관 교체",
+]
+COST_POOL = [
+ "막힘 위치와 배관 길이","배관 노후도와 구배 상태","사용 장비(스프링·관통기·고압세척기)",
+ "배관내시경 필요 여부","야간·주말 출동 여부","상가·음식점 등 영업장 여부",
+ "배관 교체 필요 여부","작업 접근성(층수·맨홀·노출 여부)",
+]
+def _rot_list(pool, seed, lo, hi):
+    n = len(pool); off = _hint(seed) % n
+    rot = pool[off:] + pool[:off]
+    k = lo + (_hint(str(seed)+"k") % (hi - lo + 1))
+    return "".join(f"<li>{x}</li>" for x in rot[:k])
+def symptom_list(seed): return _rot_list(SYMPTOM_POOL, str(seed)+"sym", 7, 9)
+def service_list(seed): return _rot_list(SERVICE_POOL, str(seed)+"svc", 10, 12)
+def cost_list(seed):    return _rot_list(COST_POOL, str(seed)+"cst", 6, 7)
+
+# ---- 작업 절차 안내(2종 표현) ----
+WORK_LI_V = [
+ ("<li>증상 확인 및 사진·영상 상담</li><li>막힘 위치 추정 및 현장 접근 여부 확인</li>"
+  "<li>작업 전 비용 기준 안내</li><li>장비 선택(스프링·관통·고압세척 등)</li>"
+  "<li>막힘 제거 또는 배관 세척</li><li>배수 테스트 및 재발 방지 안내</li>"),
+ ("<li>전화·사진 상담으로 증상과 위치 파악</li><li>건물 형태·배관 구조 확인</li>"
+  "<li>예상 비용 기준 안내 후 동의 확인</li><li>현장에 맞는 장비 준비</li>"
+  "<li>막힘 제거·고압세척 진행</li><li>배수 테스트와 재발 방지 점검</li>"),
+]
+def work_li(seed): return vpick(str(seed)+"work", WORK_LI_V)
+
+# ---- 인접 지역명을 본문에 녹이는 한 문장(롱테일 + 내부 맥락) ----
+def neighbor_sentence(region, sibs, seed=None):
+    names = [s[0] if isinstance(s, tuple) else s for s in sibs][:3]
+    if not names:
+        return ""
+    joined = "·".join(names)
+    return vpick(str(seed or region)+"nb", [
+        f"{region}과 인접한 {joined} 일대에서도 같은 유형의 하수구막힘·배관공사 상담이 들어오며, 가까운 지역은 함께 출동 동선을 잡기도 합니다.",
+        f"{joined} 등 {region} 인근 지역도 건물 구성이 비슷해 배수 문제 양상이 닮아 있습니다. 가까운 동네는 아래 링크에서 이어서 확인할 수 있습니다.",
+        f"{region} 주변의 {joined}에서도 싱크대·변기·욕실 배수구 막힘 상담이 이어지며, 인접 지역은 현장 접근이 빨라 상담이 수월한 편입니다.",
+    ])
+
+# ---- 지역 롱테일 내부링크(서비스·비용·사례 페이지로 연결) ----
+LONGTAIL_TARGETS = [
+ ("하수구막힘", "/service/sewer-clog.html"),
+ ("싱크대막힘", "/service/sewer-clog.html"),
+ ("변기막힘", "/service/sewer-clog.html"),
+ ("욕실 배수구막힘", "/service/sewer-clog.html"),
+ ("음식점 하수구막힘", "/service/sewer-clog.html"),
+ ("배관공사", "/service/plumbing.html"),
+ ("배관교체·보수", "/service/plumbing.html"),
+ ("누수탐지", "/service/leak-detection.html"),
+ ("고압세척", "/service/high-pressure.html"),
+ ("배관내시경 CCTV 검사", "/service/cctv.html"),
+ ("배관공사 비용", "/price.html"),
+ ("시공사례", "/cases.html"),
+]
+def longtail_links(region, seed=None):
+    seed = seed if seed is not None else region
+    n = len(LONGTAIL_TARGETS); off = _hint(str(seed)+"lt") % n
+    rot = LONGTAIL_TARGETS[off:] + LONGTAIL_TARGETS[:off]
+    sel = rot[:9]
+    return "".join(f'<a href="{u}">{region} {kw}</a>' for kw, u in sel)
+
+# ---- 인접 지역 롱테일 앵커(동네명 + 변동 키워드) ----
+NEIGHBOR_KW = ["하수구막힘","배관공사","싱크대막힘","변기막힘","배수구막힘","배관내시경"]
+def neighbor_longtail(items):
+    out = []
+    for nm, url in items:
+        kw = NEIGHBOR_KW[_hint(nm) % len(NEIGHBOR_KW)]
+        out.append(f'<a href="{url}">{nm} {kw}</a>')
+    return "".join(out)
+
+# ---- 잔여 공통 문장 변형(연결 문장·비용 안내·FAQ) ----
+COST_NOTE_V = [
+ COST_NOTE,
+ "정확한 금액은 현장 구조와 막힘 정도를 확인한 뒤 안내됩니다. 막힘 위치·장비·작업 난이도에 따라 비용이 달라집니다.",
+ "비용은 막힘 위치와 정도, 사용 장비, 배관 상태에 따라 결정됩니다. 현장 확인 전에는 대략적인 기준만 안내드립니다.",
+]
+def cost_note(seed): return vpick(str(seed)+"cn", COST_NOTE_V)
+
+COST_INTRO_TAIL_V = [
+ "아래 항목에 따라 필요한 장비와 작업 시간이 달라질 수 있습니다.",
+ "다음 조건들이 장비 선택과 작업 시간을 좌우합니다.",
+ "아래 요소에 따라 작업 난이도와 소요 시간이 달라집니다.",
+]
+def cost_intro(region, seed):
+    return f"{region} 배관공사 비용은 현장 조건에 따라 달라집니다. " + vpick(str(seed)+"ci", COST_INTRO_TAIL_V)
+
+CALL_TAIL_V = [
+ "현장 조건을 먼저 확인하고 필요한 작업 방향을 안내합니다.",
+ "상태를 먼저 파악한 뒤 필요한 장비와 작업 방향을 안내해 드립니다.",
+ "증상을 확인한 다음 작업 범위와 방향을 안내합니다.",
+]
+def call_tail(seed): return vpick(str(seed)+"ct", CALL_TAIL_V)
+
+FAQ_CHEMICAL_V = [
+ FAQ_CHEMICAL,
+ ("막힌 배수구에 약품을 부어도 괜찮나요?",
+  "약품은 가벼운 막힘에는 효과가 있을 수 있지만, 반복 막힘이나 노후 배관에는 손상·악취 위험이 있습니다. 자주 막힌다면 약품보다 내부 확인이 안전합니다."),
+ ("배수구가 막혔을 때 시중 세정제를 써도 되나요?",
+  "일시적으로 뚫릴 수 있으나 배관을 상하게 하거나 역류·악취를 키울 수 있습니다. 증상이 반복되면 무리한 자가 조치보다 상담을 권합니다."),
+]
+def faq_chemical(seed): return vpick(str(seed)+"fc", FAQ_CHEMICAL_V)
+
 def local_sidebar(title, note):
     return f"""<aside class="sidebar-card">
       <h3>{title}</h3>
@@ -1598,7 +1785,7 @@ def build_gu_system(sido_ko, sido_slug, sido_url, gu_ko, gu_slug, lead, intro_pa
          "지역과 시간대, 현장 상황에 따라 상담 후 안내됩니다. 증상과 사진을 먼저 보내주시면 필요한 장비를 더 정확히 판단할 수 있습니다."),
         (f"{gu_ko}에서 싱크대가 자주 막히면 고압세척이 필요한가요?",
          "반복 막힘은 단순 이물질보다 배관 내부 기름때·퇴적물이 원인일 수 있습니다. 배관내시경 확인 후 고압세척 여부를 판단하는 것이 좋습니다."),
-        FAQ_CHEMICAL,
+        faq_chemical(gu_ko),
         (f"{gu_ko} 상가·음식점도 작업 가능한가요?",
          "상가, 음식점, 카페, 사무실, 병원, 학원 등 현장 구조에 따라 상담 가능합니다. 영업장 배관은 가정집보다 원인이 복잡할 수 있어 작업 전 확인이 중요합니다."),
     ]
@@ -1901,26 +2088,66 @@ print("\\nSEOCHO/SONGPA SYSTEMS BUILT.")
 #   - 이미 고유 콘텐츠가 있는 시군구(CUSTOM_GUNGU_URL)는 제외
 #   - 각 페이지: 지역유형별 안내 + 형제 시군구 내부링크 + 서비스 본문 + FAQ
 # ===========================================================================
-def _sigungu_intro(name, sido):
+_SIGUNGU_GU_P1 = [
+ "{n}은 {s}에 속한 자치구로, 아파트·오피스텔·빌라 같은 주거시설과 상가·사무실이 함께 밀집한 지역입니다. 가정용 배관과 상업용 배관 상담이 동시에 들어옵니다.",
+ "{n}은 {s}의 자치구로, 대단지 아파트와 상권, 업무시설이 어우러져 배수 사용량이 많은 지역입니다. 주거·상업 배관 상담이 고루 접수됩니다.",
+ "{n}은 {s}에서 인구와 상권이 밀집한 자치구로, 주거지와 영업장이 가까이 붙어 있어 배관 문제의 원인이 다양합니다. 가정·상가 배관 상담이 함께 들어옵니다.",
+]
+_SIGUNGU_GU_P2 = [
+ "{n} 일대는 식당·카페 등 상가와 주거가 섞여 있어 싱크대 배수 불량, 욕실·바닥 배수구 역류, 화장실 악취, 주방 기름때 막힘 등 현장마다 원인이 다양하게 나타납니다.",
+ "{n}에서는 아파트 공용관 부담으로 인한 층간 역류, 노후 주택의 구배 불량, 영업장 주방 기름 슬러지 막힘이 대표적으로 접수됩니다.",
+ "{n}은 건물 밀도가 높아 한 세대·한 점포의 막힘이 주변으로 번지기 쉽고, 상권 골목은 바닥 배수구 역류 상담이 잦습니다.",
+]
+_SIGUNGU_GUN_P1 = [
+ "{n}은 {s}의 군 지역으로, 주거지와 소규모 상권, 농어촌 시설이 어우러져 있습니다. 단독·다세대 주택과 상가, 외부 오수관·정화조 관련 상담이 함께 들어옵니다.",
+ "{n}은 {s}에 속한 군으로, 읍·면 중심지의 상권과 외곽 농어촌 주택이 함께 자리해 도심과는 배관 환경이 다릅니다. 외부 배관 상담 비중이 높습니다.",
+ "{n}은 {s}의 군 지역으로, 마을 단위 주거와 농가·시설이 넓게 퍼져 있어 정화조·외부 오수관 문제가 자주 나타납니다.",
+]
+_SIGUNGU_GUN_P2 = [
+ "{n}은 단독주택과 농어촌 시설이 많아 외부 배관이나 정화조 연결부에서 비롯된 문제가 나타나기도 하며, 상가는 업종에 따라 배수 부담이 달라집니다. 현장 구조를 먼저 확인하는 것이 중요합니다.",
+ "{n}에서는 노후 배관의 부식·퇴적, 겨울철 동파, 정화조 주변 악취 상담이 흔합니다. 배관이 길게 이어져 막힘 위치 점검이 특히 중요합니다.",
+ "{n}은 읍·면 중심 상가의 주방 배수와 외곽 주택의 외부 오수관 문제가 함께 들어옵니다. 사용 환경이 제각각이라 작업 전 확인이 필요합니다.",
+]
+_SIGUNGU_SI_P1 = [
+ "{n}은 {s}의 도시 지역으로, 아파트 단지와 상권, 사무·상업시설이 어우러진 곳입니다. 주거용 생활 배관과 상업용 배관 상담이 고루 들어옵니다.",
+ "{n}은 {s}에 속한 시 지역으로, 신축 택지지구와 원도심 상권이 공존해 건물 형태가 다양합니다. 가정·상가 배관 상담이 함께 접수됩니다.",
+ "{n}은 {s}의 시로, 아파트 밀집지와 전통 상권, 외곽 주거지가 어우러져 배관 문제의 양상이 지역마다 다릅니다.",
+]
+_SIGUNGU_SI_P2 = [
+ "{n}은 신축 아파트부터 노후 주택, 상가·사무실까지 건물 형태가 다양해 막힘의 원인도 제각각입니다. 가정집은 머리카락·음식물 찌꺼기가, 음식점은 기름 슬러지가 주요 원인이 되곤 합니다.",
+ "{n}에서는 택지지구 신축 단지의 초기 배수 점검과 원도심 노후 배관의 구배·부식 상담이 함께 들어옵니다. 상권은 주방 기름때 막힘이 잦습니다.",
+ "{n}은 주거지와 상권이 넓게 퍼져 있어 생활 배관과 영업장 배관 상담이 고루 접수됩니다. 반복 막힘은 내부 퇴적을 의심해볼 수 있습니다.",
+]
+def _sigungu_intro(name, sido, seed=None):
+    sd = str(seed or name)
     if name.endswith("구"):
-        p1 = f"{name}은 {sido}에 속한 자치구로, 아파트·오피스텔·빌라 같은 주거시설과 상가·사무실이 함께 밀집한 지역입니다. 가정용 배관과 상업용 배관 상담이 동시에 들어옵니다."
-        p2 = f"{name} 일대는 식당·카페 등 상가와 주거가 섞여 있어 싱크대 배수 불량, 욕실·바닥 배수구 역류, 화장실 악취, 주방 기름때 막힘 등 현장마다 원인이 다양하게 나타납니다."
+        p1 = vpick(sd+"sp1", _SIGUNGU_GU_P1); p2 = vpick(sd+"sp2", _SIGUNGU_GU_P2)
     elif name.endswith("군"):
-        p1 = f"{name}은 {sido}의 군 지역으로, 주거지와 소규모 상권, 농어촌 시설이 어우러져 있습니다. 단독·다세대 주택과 상가, 외부 오수관·정화조 관련 상담이 함께 들어옵니다."
-        p2 = f"{name}은 단독주택과 농어촌 시설이 많아 외부 배관이나 정화조 연결부에서 비롯된 문제가 나타나기도 하며, 상가는 업종에 따라 배수 부담이 달라집니다. 현장 구조를 먼저 확인하는 것이 중요합니다."
+        p1 = vpick(sd+"sp1", _SIGUNGU_GUN_P1); p2 = vpick(sd+"sp2", _SIGUNGU_GUN_P2)
     else:
-        p1 = f"{name}은 {sido}의 도시 지역으로, 아파트 단지와 상권, 사무·상업시설이 어우러진 곳입니다. 주거용 생활 배관과 상업용 배관 상담이 고루 들어옵니다."
-        p2 = f"{name}은 신축 아파트부터 노후 주택, 상가·사무실까지 건물 형태가 다양해 막힘의 원인도 제각각입니다. 가정집은 머리카락·음식물 찌꺼기가, 음식점은 기름 슬러지가 주요 원인이 되곤 합니다."
-    p3 = f"스피드 배관공사는 {name}의 건물 형태와 막힘 정도를 먼저 확인한 뒤 필요한 작업 방향을 안내합니다. 단순 막힘인지 반복 막힘인지에 따라 장비와 작업 시간이 달라지므로, 무리한 자가 조치보다 상담을 통해 원인을 정확히 파악하는 것이 안전합니다."
-    return p1, p2, p3
+        p1 = vpick(sd+"sp1", _SIGUNGU_SI_P1); p2 = vpick(sd+"sp2", _SIGUNGU_SI_P2)
+    p3 = vpick(sd+"sp3", [
+        f"스피드 배관공사는 {name}의 건물 형태와 막힘 정도를 먼저 확인한 뒤 필요한 작업 방향을 안내합니다. 단순 막힘인지 반복 막힘인지에 따라 장비와 작업 시간이 달라지므로, 무리한 자가 조치보다 상담을 통해 원인을 정확히 파악하는 것이 안전합니다.",
+        f"{name} 현장은 건물·사용 환경에 따라 막힘 양상이 달라, 상태를 먼저 확인한 뒤 장비와 작업 방향을 정합니다. 반복 막힘이라면 내부 점검을 병행하는 편이 재발을 줄입니다.",
+    ])
+    return p1.format(n=name, s=sido), p2.format(n=name, s=sido), p3
 
 def gen_sigungu_page(sido_ko, sido_slug, gu_ko, siblings):
     sido_url = f"/area/{sido_slug}/"
     crumbs = [("홈","/"),("지역별 서비스","/area/"),(sido_ko, sido_url),(gu_ko, None)]
-    p1, p2, p3 = _sigungu_intro(gu_ko, sido_ko)
-    fixt = vpick(gu_ko+"f", FIXTURE_V)
-    insp = vpick(gu_ko+"i", INSPECT_V)
-    sib_links = "".join(f'<a href="{gungu_url(sido_slug, g)}">{g}</a>' for g in siblings)
+    _sd = f"{sido_slug}|{gu_ko}"   # 같은 구·시명이 여러 시도에 있어도 고유 변형이 선택되도록 시도 포함
+    p1, p2, p3 = _sigungu_intro(gu_ko, sido_ko, seed=_sd)
+    fixt = vpick(_sd+"f", FIXTURE_V)
+    insp = vpick(_sd+"i", INSPECT_V)
+    selfc = vpick(_sd+"s", SELFCARE_V)
+    wintro = vpick(_sd+"w", WORKINTRO_V)
+    sym_li = symptom_list(_sd)
+    svc_li = service_list(_sd)
+    cst_li = cost_list(_sd)
+    work_items = work_li(_sd)
+    lt_links = longtail_links(gu_ko, seed=_sd)
+    nb_sentence = neighbor_sentence(gu_ko, siblings, seed=_sd)
+    sib_links = neighbor_longtail([(g, gungu_url(sido_slug, g)) for g in siblings])
     _base = gungu_url(sido_slug, gu_ko)
     dong_links = "".join(f'<a href="{_base}{dong_slug(dn)}/">{dn}</a>' for dn in dongs_of(sido_slug, gu_ko)) \
                  or '<span>전 지역 상담 가능</span>'
@@ -1929,7 +2156,7 @@ def gen_sigungu_page(sido_ko, sido_slug, gu_ko, siblings):
          "지역과 시간대, 현장 상황에 따라 상담 후 안내됩니다. 증상과 사진을 먼저 보내주시면 필요한 장비를 더 정확히 판단할 수 있습니다."),
         (f"{gu_ko}에서 싱크대가 자주 막히면 어떻게 하나요?",
          "반복 막힘은 단순 이물질보다 배관 내부 기름때·퇴적물이 원인일 수 있습니다. 배관내시경으로 내부를 확인한 뒤 고압세척 여부를 판단하는 것이 좋습니다."),
-        FAQ_CHEMICAL,
+        faq_chemical(_sd),
         (f"{gu_ko} 상가·음식점도 작업 가능한가요?",
          "상가, 음식점, 카페, 사무실 등 현장 구조에 따라 상담 가능합니다. 영업장 배관은 가정집보다 원인이 복잡할 수 있어 작업 전 확인이 중요합니다."),
     ]
@@ -1947,6 +2174,7 @@ def gen_sigungu_page(sido_ko, sido_slug, gu_ko, siblings):
           <li><a href="#services">서비스 가능 항목</a></li>
           <li><a href="#work">작업 방식</a></li>
           <li><a href="#cost">비용 기준</a></li>
+          <li><a href="#links">관련 서비스</a></li>
           <li><a href="#area">인접 시·군·구</a></li>
           <li><a href="#faq">자주 묻는 질문</a></li>
           <li><a href="#call">전화 상담</a></li>
@@ -1959,33 +2187,37 @@ def gen_sigungu_page(sido_ko, sido_slug, gu_ko, siblings):
       <p>{p3}</p>
 
       <h2 id="symptom">{gu_ko} 하수구막힘 증상</h2>
-      <ul class="ticks">{SYMPTOM_LI}</ul>
+      <ul class="ticks">{sym_li}</ul>
 
       <h2 id="fixtures">{gu_ko} 싱크대·변기·욕실 배수구 문제</h2>
-      <p>{FIXTURE_P}</p>
+      <p>{fixt}</p>
 
       <h2 id="services">{gu_ko} 서비스 가능 항목</h2>
-      <ul class="ticks">{SERVICE_LI}</ul>
+      <ul class="ticks">{svc_li}</ul>
 
       <h2 id="work">{gu_ko} 작업 방식 안내</h2>
-      <p>{gu_ko} 현장도 증상 확인과 사진·영상 상담을 먼저 진행한 뒤, 막힘 위치와 원인을 추정해 필요한 장비를 선택합니다. 작업 전 비용 기준을 안내드리고, 동의 후 막힘 제거 또는 배관 세척을 진행합니다.</p>
-      <ol style="padding-left:20px;display:flex;flex-direction:column;gap:8px;">{WORK_LI}</ol>
-      <p>{INSPECT_P}</p>
+      <p>{gu_ko} {wintro}</p>
+      <ol style="padding-left:20px;display:flex;flex-direction:column;gap:8px;">{work_items}</ol>
+      <p>{insp}</p>
 
       <h2 id="prepare">{gu_ko} 자가 조치 시 주의사항</h2>
-      <p>{SELFCARE_P}</p>
+      <p>{selfc}</p>
 
       <h2 id="cost">비용이 달라지는 기준</h2>
-      <p>{gu_ko} 배관공사 비용은 현장 조건에 따라 달라집니다. 아래 항목에 따라 필요한 장비와 작업 시간이 달라질 수 있습니다.</p>
-      <ul class="ticks">{COST_LI}</ul>
-      <p class="price-note">{COST_NOTE}</p>
+      <p>{cost_intro(gu_ko, _sd)}</p>
+      <ul class="ticks">{cst_li}</ul>
+      <p class="price-note">{cost_note(_sd)}</p>
+
+      <h2 id="links">{gu_ko} 관련 서비스·정보 바로가기</h2>
+      <p>{gu_ko}에서 자주 찾는 증상별 서비스와 비용·시공사례 안내입니다. 필요한 항목을 선택해 자세한 내용을 확인하세요.</p>
+      <div class="tag-list">{lt_links}</div>
 
       <h2 id="dong">{gu_ko} 서비스 가능 지역(행정동)</h2>
       <p>{gu_ko} 전역으로 상담 가능합니다. 아래 동을 선택하면 해당 지역의 배관공사·하수구막힘 안내를 확인할 수 있습니다.</p>
       <div class="tag-list">{dong_links}</div>
 
       <h2 id="area">{sido_ko} 인접 시·군·구</h2>
-      <p>{sido_ko}의 다른 시·군·구도 상담 가능합니다. 가까운 지역을 선택해 확인하세요.</p>
+      <p>{nb_sentence}</p>
       <div class="tag-list">{sib_links}</div>
 
       <h2 id="faq">자주 묻는 질문</h2>
@@ -1993,7 +2225,7 @@ def gen_sigungu_page(sido_ko, sido_slug, gu_ko, siblings):
 {faq_html(faq)}      </div>
 
       <h2 id="call">{gu_ko} 전화 상담</h2>
-      <p>{gu_ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. 현장 조건을 먼저 확인하고 필요한 작업 방향을 안내합니다.</p>
+      <p>{gu_ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. {call_tail(_sd)}</p>
       <div class="local-cta">
         <a class="btn btn--primary btn--lg" href="tel:0000-0000">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
@@ -2017,33 +2249,38 @@ def gen_dong_page(sido_ko, sido_slug, gu_ko, gu_url, dong_ko, siblings, override
     if gu_ko != sido_ko:
         crumbs.append((gu_ko, gu_url))
     crumbs.append((dong_ko, None))
-    if dong_ko.endswith(("읍","면")):
-        p1 = f"{dong_ko}은 {gu_ko}에 속한 지역으로, 주거지와 소규모 상권, 농어촌·단독주택이 어우러진 곳입니다. {dong_ko} 일대의 배관공사·하수구막힘 상담을 안내합니다."
-        p2 = f"{dong_ko}은 단독주택과 다세대가 많아 외부 오수관이나 정화조 연결부에서 비롯된 문제가 나타나기도 하며, 상가는 업종에 따라 배수 부담이 달라집니다. 현장 구조를 먼저 확인하는 것이 중요합니다."
-    else:
-        p1 = f"{dong_ko}은 {gu_ko}에 속한 행정동으로, 아파트·주택과 상가가 어우러진 지역입니다. {dong_ko} 일대의 배관공사, 하수구막힘, 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다."
-        p2 = f"{dong_ko}은 주거와 상가가 섞여 있어 가정용·상업용 배관 상담이 함께 들어옵니다. 가정집은 머리카락·음식물·비누 찌꺼기가, 음식점은 기름 슬러지가 주요 원인이 되곤 합니다."
-    p3 = vpick(dong_ko+"p", [
+    rtype = region_type(dong_ko, sido_slug)
+    _sd = f"{sido_slug}|{gu_ko}|{dong_ko}"   # 동명이 전국에 중복돼도 고유 변형이 선택되도록 상위 지역까지 포함한 시드
+    p1 = vpick(_sd+"p1", INTRO_P1[rtype]).format(n=dong_ko, gu=gu_ko)
+    p2 = vpick(_sd+"p2", INTRO_P2[rtype]).format(n=dong_ko, gu=gu_ko)
+    p3 = vpick(_sd+"p", [
         f"스피드 배관공사는 {dong_ko}의 건물 형태와 막힘 정도를 먼저 확인한 뒤 필요한 작업 방향을 안내합니다. 단순 막힘인지 반복 막힘인지에 따라 장비와 작업 시간이 달라지므로, 무리한 자가 조치보다 상담을 통해 원인을 정확히 파악하는 것이 안전합니다.",
         f"{dong_ko} 현장은 건물과 사용 환경에 따라 막힘의 양상이 달라, 먼저 상태를 확인한 뒤 작업 방향을 정하는 것이 중요합니다. 반복 막힘이라면 단순 관통보다 내부 점검을 병행하는 편이 재발을 줄입니다.",
         f"스피드 배관공사는 {dong_ko}에서 증상과 현장 조건을 먼저 살핀 뒤 필요한 작업을 안내합니다. 막힘의 정도와 위치에 따라 장비·시간이 달라지므로, 무리한 자가 조치보다 상담으로 원인을 파악하는 것이 안전합니다.",
     ])
-    fixt = vpick(dong_ko+"f", FIXTURE_V)
-    insp = vpick(dong_ko+"i", INSPECT_V)
-    selfc = vpick(dong_ko+"s", SELFCARE_V)
-    wintro = vpick(dong_ko+"w", WORKINTRO_V)
-    stail = vpick(dong_ko+"y", SYMPTOM_TAIL_V)
-    sib_links = "".join(f'<a href="{gu_url}{dong_slug(d)}/">{d}</a>' for d in siblings) or '<span>전 지역 상담 가능</span>'
+    fixt = vpick(_sd+"f", FIXTURE_V)
+    insp = vpick(_sd+"i", INSPECT_V)
+    selfc = vpick(_sd+"s", SELFCARE_V)
+    wintro = vpick(_sd+"w", WORKINTRO_V)
+    stail = vpick(_sd+"y", SYMPTOM_TAIL_V)
+    sym_li = symptom_list(_sd)
+    svc_li = service_list(_sd)
+    cst_li = cost_list(_sd)
+    work_items = work_li(_sd)
+    nb_sentence = neighbor_sentence(dong_ko, siblings, seed=_sd)
+    lt_links = longtail_links(dong_ko, seed=_sd)
+    sib_pairs = [(d, f"{gu_url}{dong_slug(d)}/") for d in siblings]
+    sib_links = neighbor_longtail(sib_pairs) or '<span>전 지역 상담 가능</span>'
     faq = [
         (f"{dong_ko} 하수구막힘은 바로 출동 가능한가요?",
-         vpick(dong_ko+"q1", [
+         vpick(_sd+"q1", [
             "지역과 시간대, 현장 상황에 따라 상담 후 안내됩니다. 증상과 사진을 먼저 보내주시면 필요한 장비를 더 정확히 판단할 수 있습니다.",
             "현장 위치와 시간대에 따라 달라지므로 먼저 상담을 받아보시는 것이 좋습니다. 증상과 사진을 보내주시면 더 빠르게 안내드릴 수 있습니다."])),
         (f"{dong_ko}에서 싱크대가 자주 막히면 어떻게 하나요?",
-         vpick(dong_ko+"q2", [
+         vpick(_sd+"q2", [
             "반복 막힘은 단순 이물질보다 배관 내부 기름때·퇴적물이 원인일 수 있습니다. 배관내시경으로 내부를 확인한 뒤 고압세척 여부를 판단하는 것이 좋습니다.",
             "자주 막힌다면 내부에 기름때나 퇴적물이 쌓였을 가능성이 큽니다. 내시경으로 상태를 확인하고 필요하면 고압세척으로 관 벽까지 정리하는 것이 효과적입니다."])),
-        FAQ_CHEMICAL,
+        faq_chemical(_sd),
     ]
     body = f"""{phero(f"{dong_ko} 배관공사", f"{dong_ko} 배관공사·하수구막힘 상담 | 스피드 배관공사", f"{gu_ko} {dong_ko}의 배관공사, 하수구막힘, 싱크대·변기·욕실 배수구 막힘 상담을 안내합니다.", crumbs)}
 <main>
@@ -2056,30 +2293,34 @@ def gen_dong_page(sido_ko, sido_slug, gu_ko, gu_url, dong_ko, siblings, override
       <p>{p3}</p>
 
       <h2 id="symptom">{dong_ko} 하수구막힘 증상</h2>
-      <ul class="ticks">{SYMPTOM_LI}</ul>
+      <ul class="ticks">{sym_li}</ul>
       <p>{stail}</p>
 
       <h2 id="fixtures">{dong_ko} 싱크대·변기·욕실 배수구 문제</h2>
       <p>{fixt}</p>
 
       <h2 id="services">{dong_ko} 서비스 가능 항목</h2>
-      <ul class="ticks">{SERVICE_LI}</ul>
+      <ul class="ticks">{svc_li}</ul>
 
       <h2 id="work">{dong_ko} 작업 방식 안내</h2>
       <p>{dong_ko} {wintro}</p>
-      <ol style="padding-left:20px;display:flex;flex-direction:column;gap:8px;">{WORK_LI}</ol>
+      <ol style="padding-left:20px;display:flex;flex-direction:column;gap:8px;">{work_items}</ol>
       <p>{insp}</p>
 
       <h2 id="prepare">{dong_ko} 자가 조치 시 주의사항</h2>
       <p>{selfc}</p>
 
       <h2 id="cost">비용이 달라지는 기준</h2>
-      <p>{dong_ko} 배관공사 비용은 현장 조건에 따라 달라집니다. 아래 항목에 따라 필요한 장비와 작업 시간이 달라질 수 있습니다.</p>
-      <ul class="ticks">{COST_LI}</ul>
-      <p class="price-note">{COST_NOTE}</p>
+      <p>{cost_intro(dong_ko, _sd)}</p>
+      <ul class="ticks">{cst_li}</ul>
+      <p class="price-note">{cost_note(_sd)}</p>
+
+      <h2 id="links">{dong_ko} 관련 서비스·정보 바로가기</h2>
+      <p>{dong_ko}에서 자주 찾는 증상별 서비스와 비용·시공사례 안내입니다. 필요한 항목을 선택해 자세한 내용을 확인하세요.</p>
+      <div class="tag-list">{lt_links}</div>
 
       <h2 id="area">{gu_ko} 인근 지역</h2>
-      <p>{gu_ko}의 다른 지역도 상담 가능합니다. 가까운 동을 선택해 확인하세요.</p>
+      <p>{nb_sentence}</p>
       <div class="tag-list">{sib_links}</div>
 
       <h2 id="faq">자주 묻는 질문</h2>
@@ -2087,7 +2328,7 @@ def gen_dong_page(sido_ko, sido_slug, gu_ko, gu_url, dong_ko, siblings, override
 {faq_html(faq)}      </div>
 
       <h2 id="call">{dong_ko} 전화 상담</h2>
-      <p>{dong_ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. 현장 조건을 먼저 확인하고 필요한 작업 방향을 안내합니다.</p>
+      <p>{dong_ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. {call_tail(_sd)}</p>
       <div class="local-cta">
         <a class="btn btn--primary btn--lg" href="tel:0000-0000">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
