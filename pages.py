@@ -367,7 +367,7 @@ def gallery_grid(seed=None, n=None, region=None):
         items = (items[off:] + items[:off])[:n]
     label = (region + " ") if region else ""
     cards = "".join(
-        f'<figure class="svc-shot"><img src="/assets/img/gallery/{slug}.svg" '
+        f'<figure class="svc-shot"><img src="/assets/img/gallery/{slug}.webp" '
         f'alt="{label}{kw} 시공 사진 — 스피드 배관공사" loading="lazy" width="800" height="600">'
         f'<figcaption>{label}{kw}</figcaption></figure>'
         for slug, kw in items)
