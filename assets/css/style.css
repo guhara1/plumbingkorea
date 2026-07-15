@@ -1147,3 +1147,18 @@ body{ background:#E7ECF5; }
   .svc-gallery .gallery-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
   .svc-shot figcaption{font-size:12px;padding:16px 8px 8px;}
 }
+
+/* ---- 푸터 취급 서비스 키워드 블록(전 페이지 공통 SEO 커버리지) ---- */
+.footer-keywords{
+  margin:22px 0 4px;padding:18px 0;border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.footer-keywords h4{
+  margin:0 0 8px;font-size:13px;letter-spacing:.06em;color:#C9A24B;font-weight:700;
+}
+.footer-keywords .fk-list{
+  margin:0 0 8px;font-size:13px;line-height:1.9;color:rgba(255,255,255,.62);word-break:keep-all;
+}
+.footer-keywords .fk-sub{
+  margin:0;font-size:12.5px;line-height:1.8;color:rgba(255,255,255,.48);word-break:keep-all;
+}
