@@ -1119,3 +1119,31 @@ body{ background:#E7ECF5; }
   .btn--primary::after{transition:none;}
   .btn,.service-card,.case-card,.link-card,.trust-card{transition:none;}
 }
+
+/* =========================================================================
+   시공 갤러리 (키워드별 이미지 슬롯) — 메인·지역 페이지 공통
+   업로드 전에는 SVG 플레이스홀더가 노출되고, 같은 경로에 사진을 넣으면
+   자동으로 교체됩니다.
+   ========================================================================= */
+.svc-gallery{margin:8px 0 4px;}
+.svc-gallery .gallery-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;
+}
+.svc-shot{
+  position:relative;margin:0;border-radius:14px;overflow:hidden;
+  aspect-ratio:4/3;background:linear-gradient(160deg,#0E2F5A,#0A1E3C 60%,#070F1F);
+  border:1px solid rgba(201,162,75,.28);
+  box-shadow:0 14px 30px rgba(0,0,0,.28);
+}
+.svc-shot img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+}
+.svc-shot figcaption{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:22px 12px 10px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.02em;
+  background:linear-gradient(to top,rgba(5,10,20,.78),rgba(5,10,20,0));
+}
+@media (max-width:560px){
+  .svc-gallery .gallery-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .svc-shot figcaption{font-size:12px;padding:16px 8px 8px;}
+}
