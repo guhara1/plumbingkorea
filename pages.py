@@ -96,7 +96,7 @@ HOME_JSONLD = """<script type="application/ld+json">
   "image": "%(s)s/assets/logo/symbol.png",
   "logo": "%(s)s/assets/logo/logo-horizontal-dark.png",
   "url": "%(s)s/",
-  "telephone": "+82-10-5183-4300",
+  "telephone": "+82-508-4260-3312",
   "priceRange": "\\u20a9\\u20a9",
   "openingHoursSpecification": {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"00:00","closes":"23:59"},
   "areaServed": {"@type":"Country","name":"대한민국"},
@@ -147,9 +147,9 @@ HERO = """<section class="hero hero--media">
     <h1>호텔·상가·빌딩 <span class="accent">하수구막힘·배관</span>,<br>멈추지 않는 신속함.</h1>
     <p class="hero-sub">하수구막힘·배관공사·누수탐지·고압세척 — 영업 손실을 만들지 않는 24시간 상업시설 전문 출동. 선견적 후작업으로 추가금 걱정 없이 신뢰할 수 있습니다.</p>
     <div class="hero-cta">
-      <a class="btn btn--primary btn--lg" href="tel:010-5183-4300">
+      <a class="btn btn--primary btn--lg" href="tel:0508-4260-3312">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"/></svg>
-        지금 전화 010-5183-4300</a>
+        지금 전화 0508-4260-3312</a>
       <!-- 광고문의 비활성화
       <a class="btn btn--ghost-light btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">광고문의 상담</a>
       -->
@@ -736,9 +736,9 @@ def sido_page(slug, name, short, intro, districts, district_links, cases_html, p
     <aside class="sidebar-card">
       <h3>{name} 상담</h3>
       <p>{phone_note}</p>
-      <a class="phone-big" href="tel:010-5183-4300">010-5183-4300</a>
+      <a class="phone-big" href="tel:0508-4260-3312">0508-4260-3312</a>
       <p style="margin-bottom:18px;">카카오톡 상담 @스피드배관</p>
-      <a class="btn btn--primary btn--block" href="tel:010-5183-4300">☎ 전화 상담</a>
+      <a class="btn btn--primary btn--block" href="tel:0508-4260-3312">☎ 전화 상담</a>
       <!-- 광고문의 비활성화
       <a class="btn btn--ghost-light btn--block" href="https://t.me/googleseolab" target="_blank" rel="noopener" style="margin-top:10px;">광고문의 상담</a>
       -->
@@ -947,7 +947,7 @@ about_body = f"""{phero("About","회사소개","상업시설 배관, 멈추지 �
         <tr><td>대표자</td><td colspan="2">(미정)</td></tr>
         <tr><td>사업자등록번호</td><td colspan="2">000-00-00000</td></tr>
         <tr><td>주소</td><td colspan="2">(미정)</td></tr>
-        <tr><td>대표전화</td><td colspan="2">010-5183-4300</td></tr>
+        <tr><td>대표전화</td><td colspan="2">0508-4260-3312</td></tr>
         <tr><td>카카오톡</td><td colspan="2">@스피드배관</td></tr>
         <tr><td>영업시간</td><td colspan="2">연중무휴 24시간</td></tr>
       </tbody>
@@ -1000,12 +1000,12 @@ contact_body = f"""{phero("Contact","상담문의","전화 한 통이면 가장 
     <aside class="sidebar-card">
       <h3>바로 연락하기</h3>
       <p>24시간 상업시설 전문 출동. 급하실 땐 전화가 가장 빠릅니다.</p>
-      <a class="phone-big" href="tel:010-5183-4300">010-5183-4300</a>
+      <a class="phone-big" href="tel:0508-4260-3312">0508-4260-3312</a>
       <ul class="info-list" style="margin-top:18px;color:#BFD0E8;list-style:none;">
         <li style="display:block;color:#BFD0E8;">카카오톡 상담: <strong style="color:#fff;">@스피드배관</strong></li>
         <li style="display:block;color:#BFD0E8;">영업시간: <strong style="color:#fff;">연중무휴 24시간</strong></li>
       </ul>
-      <a class="btn btn--primary btn--block" href="tel:010-5183-4300" style="margin-top:16px;">☎ 전화 상담</a>
+      <a class="btn btn--primary btn--block" href="tel:0508-4260-3312" style="margin-top:16px;">☎ 전화 상담</a>
       <a class="btn btn--ghost-light btn--block" href="https://pf.kakao.com/" target="_blank" rel="noopener" style="margin-top:10px;">카카오톡 상담</a>
     </aside>
   </div>
@@ -1054,7 +1054,7 @@ def legal_page(slug, title_h1, eyebrow, intro, sections, seo_title, seo_desc):
     <p class="price-note">※ 본 문서는 표준 양식 기반의 예시이며, 사업자 정보 확정 후 실제 내용으로 교체됩니다.</p>
     {secs}
     <h2>문의처</h2>
-    <p>개인정보 및 약관 관련 문의는 대표전화(010-5183-4300) 또는 카카오톡 상담(@스피드배관)으로 연락 주시기 바랍니다.</p>
+    <p>개인정보 및 약관 관련 문의는 대표전화(0508-4260-3312) 또는 카카오톡 상담(@스피드배관)으로 연락 주시기 바랍니다.</p>
   </div>
 </section>
 </main>
@@ -1226,9 +1226,9 @@ def gungu_page(sido_slug, sido_name, sido_url, slug, gu_name, lead, paras, jobs,
     <aside class="sidebar-card">
       <h3>{gu_name} 상담</h3>
       <p>{note}</p>
-      <a class="phone-big" href="tel:010-5183-4300">010-5183-4300</a>
+      <a class="phone-big" href="tel:0508-4260-3312">0508-4260-3312</a>
       <p style="margin-bottom:18px;">카카오톡 상담 @스피드배관</p>
-      <a class="btn btn--primary btn--block" href="tel:010-5183-4300">☎ 전화 상담</a>
+      <a class="btn btn--primary btn--block" href="tel:0508-4260-3312">☎ 전화 상담</a>
       <!-- 광고문의 비활성화
       <a class="btn btn--ghost-light btn--block" href="https://t.me/googleseolab" target="_blank" rel="noopener" style="margin-top:10px;">광고문의 상담</a>
       -->
@@ -1645,9 +1645,9 @@ def local_sidebar(title, note):
     return f"""<aside class="sidebar-card">
       <h3>{title}</h3>
       <p>{note}</p>
-      <a class="phone-big" href="tel:010-5183-4300">010-5183-4300</a>
+      <a class="phone-big" href="tel:0508-4260-3312">0508-4260-3312</a>
       <p style="margin-bottom:18px;">증상·위치·건물 형태를 알려주시면 더 정확히 안내드립니다.</p>
-      <a class="btn btn--primary btn--block" href="tel:010-5183-4300">☎ 전화 상담하기</a>
+      <a class="btn btn--primary btn--block" href="tel:0508-4260-3312">☎ 전화 상담하기</a>
       <a class="btn btn--ghost-light btn--block" href="https://t.me/googleseolab" target="_blank" rel="noopener" style="margin-top:10px;">사진 보내기 · 상담</a>
     </aside>"""
 
@@ -1743,7 +1743,7 @@ def build_gangnam_gu():
       <h2 id="call">강남 전화 상담</h2>
       <p>강남구 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. 스피드 배관공사는 현장 조건을 먼저 확인하고 필요한 작업 방향을 안내합니다.</p>
       <div class="local-cta">
-        <a class="btn btn--primary btn--lg" href="tel:010-5183-4300">☎ 전화 상담하기</a>
+        <a class="btn btn--primary btn--lg" href="tel:0508-4260-3312">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
         <a class="btn btn--secondary btn--lg" href="#cost">비용 기준 보기</a>
         <a class="btn btn--secondary btn--lg" href="/cases.html">강남 현장사례 보기</a>
@@ -1844,7 +1844,7 @@ def build_gangnam_dong(ko, slug, intro1, intro2, problem, adjacency):
       <h2 id="call">{ko} 전화 상담</h2>
       <p>{ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. 현장 조건을 먼저 확인하고 필요한 작업 방향을 안내합니다.</p>
       <div class="local-cta">
-        <a class="btn btn--primary btn--lg" href="tel:010-5183-4300">☎ 전화 상담하기</a>
+        <a class="btn btn--primary btn--lg" href="tel:0508-4260-3312">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
         <a class="btn btn--secondary btn--lg" href="/area/seoul/gangnam-gu/">강남구 전체 보기</a>
       </div>
@@ -1954,7 +1954,7 @@ def build_gu_system(sido_ko, sido_slug, sido_url, gu_ko, gu_slug, lead, intro_pa
       <h2 id="call">{gu_ko} 전화 상담</h2>
       <p>{gu_ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. 스피드 배관공사는 현장 조건을 먼저 확인하고 필요한 작업 방향을 안내합니다.</p>
       <div class="local-cta">
-        <a class="btn btn--primary btn--lg" href="tel:010-5183-4300">☎ 전화 상담하기</a>
+        <a class="btn btn--primary btn--lg" href="tel:0508-4260-3312">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
         <a class="btn btn--secondary btn--lg" href="#cost">비용 기준 보기</a>
         <a class="btn btn--secondary btn--lg" href="/cases.html">현장사례 보기</a>
@@ -2053,7 +2053,7 @@ def build_gu_system(sido_ko, sido_slug, sido_url, gu_ko, gu_slug, lead, intro_pa
       <h2 id="call">{ko} 전화 상담</h2>
       <p>{ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. 현장 조건을 먼저 확인하고 필요한 작업 방향을 안내합니다.</p>
       <div class="local-cta">
-        <a class="btn btn--primary btn--lg" href="tel:010-5183-4300">☎ 전화 상담하기</a>
+        <a class="btn btn--primary btn--lg" href="tel:0508-4260-3312">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
         <a class="btn btn--secondary btn--lg" href="{gu_url}">{gu_ko} 전체 보기</a>
       </div>
@@ -2343,7 +2343,7 @@ def gen_sigungu_page(sido_ko, sido_slug, gu_ko, siblings):
       <h2 id="call">{gu_ko} 전화 상담</h2>
       <p>{gu_ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. {call_tail(_sd)}</p>
       <div class="local-cta">
-        <a class="btn btn--primary btn--lg" href="tel:010-5183-4300">☎ 전화 상담하기</a>
+        <a class="btn btn--primary btn--lg" href="tel:0508-4260-3312">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
         <a class="btn btn--secondary btn--lg" href="{sido_url}">{sido_ko} 전체 보기</a>
       </div>
@@ -2450,7 +2450,7 @@ def gen_dong_page(sido_ko, sido_slug, gu_ko, gu_url, dong_ko, siblings, override
       <h2 id="call">{dong_ko} 전화 상담</h2>
       <p>{dong_ko}에서 하수구막힘이나 배관공사 상담이 필요하다면 증상, 위치, 건물 형태, 물이 내려가는 속도, 냄새 여부를 알려주세요. {call_tail(_sd)}</p>
       <div class="local-cta">
-        <a class="btn btn--primary btn--lg" href="tel:010-5183-4300">☎ 전화 상담하기</a>
+        <a class="btn btn--primary btn--lg" href="tel:0508-4260-3312">☎ 전화 상담하기</a>
         <a class="btn btn--secondary btn--lg" href="https://t.me/googleseolab" target="_blank" rel="noopener">사진 보내기</a>
         <a class="btn btn--secondary btn--lg" href="{gu_url}">{gu_ko} 전체 보기</a>
       </div>
